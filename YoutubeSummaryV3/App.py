@@ -1,7 +1,6 @@
 import streamlit as st
 import subprocess
 import os
-import whisper
 from openai import OpenAI
 
 # 🔐 GPT Setup (Only for summarization)
@@ -23,22 +22,25 @@ def download_audio(youtube_url, output_path="audio.mp3"):
         print("❌ Download failed:", e)
         return None
 
-# 🎙️ Step 2: Transcribe audio locally
+# 🎙️ Step 2: Transcribe audio via OpenAI Whisper API
 def transcribe_audio(audio_path):
     try:
-        model = whisper.load_model("base")
-        result = model.transcribe(audio_path)
-        print("✅ Transcription complete.")
-        return result["text"]
+        with open(audio_path, "rb") as audio_file:
+            transcript = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file
+            )
+        st.success("✅ Transcription complete.")
+        return transcript.text
     except Exception as e:
-        print("❌ Transcription failed:", e)
+        st.error(f"❌ Transcription failed: {e}")
         return None
 
 # 🤖 Step 3: Summarize via GPT (v1 syntax)
 def summarize_text(transcript, custom_prompt):
     try:
         response = client.chat.completions.create(
-            model="gpt-4.1",
+            model= "gpt-4o",
             messages=[
                 {"role": "system", "content": custom_prompt},
                 {"role": "user", "content": transcript}
@@ -72,7 +74,7 @@ if st.button("Summarize"):
         audio_file = download_audio(url)
 
     if audio_file and os.path.exists(audio_file):
-        with st.spinner("🎤 Transcribing audio..."):
+        with st.spinner("🎤 Transcribing audio via API..."):
             transcript = transcribe_audio(audio_file)
 
         if transcript:
