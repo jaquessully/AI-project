@@ -96,7 +96,7 @@ Key idea is to spot concepts, trends, risks and opportunities I could add to my 
 - Use bullet points
 - Max 4 lines per point
 - Include timestamps in (mm:ss) format
-- Keep each section under 250 words
+- Keep each section under 400 words
 - For references, if data missing, say so - do not invent
 
 [CRITICAL INSIGHT TAGGING]
