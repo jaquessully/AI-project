@@ -6,20 +6,20 @@ from openai import OpenAI
 # 🔐 GPT Setup (Only for summarization)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# 🎵 Step 1: Download audio using yt-dlp
-def download_audio(youtube_url, output_path="audio.mp3"):
+# 🎵 Step 1: Download audio using yt-dlp without conversion (avoid needing ffmpeg)
+def download_audio(youtube_url, output_path="audio.webm"):
     command = [
         "yt-dlp",
-        "-x", "--audio-format", "mp3",
+        "-f", "bestaudio",
         "-o", output_path,
         youtube_url
     ]
     try:
         subprocess.run(command, check=True)
-        print(f"✅ Audio downloaded successfully: {output_path}")
+        st.success(f"✅ Audio downloaded successfully: {output_path}")
         return output_path
     except subprocess.CalledProcessError as e:
-        print("❌ Download failed:", e)
+        st.error(f"❌ Download failed: {e}")
         return None
 
 # 🎙️ Step 2: Transcribe audio via OpenAI Whisper API
